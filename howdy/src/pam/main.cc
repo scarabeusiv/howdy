@@ -2,6 +2,7 @@
 #include <csignal>
 #include <cstdlib>
 
+#include <fcntl.h>
 #include <glob.h>
 #include <libintl.h>
 #include <pthread.h>
@@ -21,6 +22,7 @@
 #include <fstream>
 #include <functional>
 #include <future>
+#include <initializer_list>
 #include <mutex>
 #include <string>
 #include <tuple>
@@ -266,11 +268,32 @@ auto identify(pam_handle_t *pamh, int flags, int argc, const char **argv,
                               COMPARE_PROCESS_PATH, username, nullptr};
   pid_t child_pid;
 
+  // When stdout or stderr is a socket, it is a protocol channel rather than a
+  // terminal or a log: polkit's socket-activated agent helper
+  // (polkit-agent-helper@.service, StandardOutput=socket) talks to the
+  // authentication agent over it. Anything the python process prints there
+  // corrupts that protocol, and the agent fails the whole session instead of
+  // falling back to the next PAM module. Send that output to /dev/null.
+  posix_spawn_file_actions_t file_actions;
+  posix_spawn_file_actions_init(&file_actions);
+  for (int output_fd : {STDOUT_FILENO, STDERR_FILENO}) {
+    struct stat output_stat {};
+    if (fstat(output_fd, &output_stat) == 0 && S_ISSOCK(output_stat.st_mode)) {
+      posix_spawn_file_actions_addopen(&file_actions, output_fd, "/dev/null",
+                                       O_WRONLY, 0);
+    }
+  }
+
   // Start the python subprocess
-  if (posix_spawnp(&child_pid, PYTHON_EXECUTABLE_PATH, nullptr, nullptr,
-                   const_cast<char *const *>(args), nullptr) != 0) {
-    syslog(LOG_ERR, "Can't spawn the howdy process: %s (%d)", strerror(errno),
-           errno);
+  int spawn_result =
+      posix_spawnp(&child_pid, PYTHON_EXECUTABLE_PATH, &file_actions, nullptr,
+                   const_cast<char *const *>(args), nullptr);
+  posix_spawn_file_actions_destroy(&file_actions);
+
+  // posix_spawnp returns the error number instead of setting errno
+  if (spawn_result != 0) {
+    syslog(LOG_ERR, "Can't spawn the howdy process: %s (%d)",
+           strerror(spawn_result), spawn_result);
     return PAM_SYSTEM_ERR;
   }
 
