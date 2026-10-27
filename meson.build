@@ -13,7 +13,8 @@ paths_dict = {
     'dlib_data_dir': dlibdatadir,
     'user_models_dir': usermodelsdir,
     'log_path': logpath,
-    'python_path': pythonpath
+    'python_path': pythonpath,
+    'bin_dir': join_paths(get_option('prefix'), get_option('bindir'))
 }
 
 # We need to keep this order beause howdy-gtk defines the gtk script path which is used later in howdy

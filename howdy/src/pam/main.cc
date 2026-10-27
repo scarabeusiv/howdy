@@ -26,6 +26,7 @@
 #include <mutex>
 #include <string>
 #include <tuple>
+#include <vector>
 
 #include <INIReader.h>
 
@@ -284,10 +285,29 @@ auto identify(pam_handle_t *pamh, int flags, int argc, const char **argv,
     }
   }
 
+  // Spawn the python process with a minimal fixed environment instead of
+  // inheriting this process's one: a PAM service's environment can be
+  // influenced by its caller, and variables such as PYTHONPATH or
+  // PYTHONHOME would steer the root interpreter's module loading. Only the
+  // locale settings are carried over.
+  std::string lang_entry;
+  std::string lc_all_entry;
+  std::vector<const char *> child_env{"PATH=/usr/local/bin:/usr/bin:/bin"};
+  if (const char *lang = std::getenv("LANG"); lang != nullptr) {
+    lang_entry = std::string("LANG=") + lang;
+    child_env.push_back(lang_entry.c_str());
+  }
+  if (const char *lc_all = std::getenv("LC_ALL"); lc_all != nullptr) {
+    lc_all_entry = std::string("LC_ALL=") + lc_all;
+    child_env.push_back(lc_all_entry.c_str());
+  }
+  child_env.push_back(nullptr);
+
   // Start the python subprocess
-  int spawn_result =
-      posix_spawnp(&child_pid, PYTHON_EXECUTABLE_PATH, &file_actions, nullptr,
-                   const_cast<char *const *>(args), nullptr);
+  int spawn_result = posix_spawnp(
+      &child_pid, PYTHON_EXECUTABLE_PATH, &file_actions, nullptr,
+      const_cast<char *const *>(args),
+      const_cast<char *const *>(child_env.data()));
   posix_spawn_file_actions_destroy(&file_actions);
 
   // posix_spawnp returns the error number instead of setting errno

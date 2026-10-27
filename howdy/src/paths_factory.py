@@ -44,5 +44,9 @@ def user_models_dir_path() -> PurePath:
     return paths.user_models_dir
 
 
+def gtk_binary_path() -> str:
+    return str(paths.bin_dir / "howdy-gtk")
+
+
 def logo_path() -> str:
     return str(paths.data_dir / "logo.png")
