@@ -112,7 +112,7 @@ auto howdy_status(char *username, int status, const INIReader &config,
     return howdy_error(status, conv_function);
   }
 
-  if (!config.GetBoolean("core", "no_confirmation", true)) {
+  if (!config.GetBoolean("core", "no_confirmation", false)) {
     // Construct confirmation text from i18n string
     std::string confirm_text(S("Identified face as {}"));
     std::string identify_msg =
@@ -228,7 +228,7 @@ auto identify(pam_handle_t *pamh, int flags, int argc, const char **argv,
   }
 
   Workaround workaround =
-      get_workaround(config.GetString("core", "workaround", "input"));
+      get_workaround(config.GetString("core", "workaround", "off"));
 
   // Will contain PAM conversation structure
   struct pam_conv *conv = nullptr;
@@ -258,7 +258,7 @@ auto identify(pam_handle_t *pamh, int flags, int argc, const char **argv,
   bindtextdomain(GETTEXT_PACKAGE, LOCALEDIR);
   textdomain(GETTEXT_PACKAGE);
 
-  if (config.GetBoolean("core", "detection_notice", true)) {
+  if (config.GetBoolean("core", "detection_notice", false)) {
     if ((conv_function(PAM_TEXT_INFO, S("Attempting facial authentication"))) !=
         PAM_SUCCESS) {
       syslog(LOG_ERR, "Failed to send detection notice");

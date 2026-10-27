@@ -141,7 +141,7 @@ config.read(paths_factory.config_file_path())
 # Get all config values needed
 use_cnn = config.getboolean("core", "use_cnn", fallback=False)
 timeout = config.getint("video", "timeout", fallback=4)
-dark_threshold = config.getfloat("video", "dark_threshold", fallback=50.0)
+dark_threshold = config.getfloat("video", "dark_threshold", fallback=60)
 video_certainty = config.getfloat("video", "certainty", fallback=3.5) / 10
 end_report = config.getboolean("debug", "end_report", fallback=False)
 save_failed = config.getboolean("snapshots", "save_failed", fallback=False)
