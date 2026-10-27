@@ -214,6 +214,9 @@ send_to_ui("M", _("Identifying you..."))
 frames = 0
 valid_frames = 0
 timings["fr"] = time.time()
+# The scan timeout measures elapsed time, so it runs on a monotonic clock:
+# a wall-clock jump (suspend/resume, NTP) must not end the scan early
+frame_start = time.monotonic()
 dark_running_total = 0
 
 while True:
@@ -228,7 +231,7 @@ while True:
 	send_to_ui("S", ui_subtext)
 
 	# Stop if we've exceeded the time limit
-	if time.time() - timings["fr"] > timeout:
+	if time.monotonic() - frame_start > timeout:
 		# Create a timeout snapshot if enabled
 		if save_failed:
 			make_snapshot(_("FAILED"))
