@@ -161,4 +161,6 @@ This package is in no way as secure as a password and will never be. Although it
 
 To minimize the chance of this program being compromised, it's recommended to leave Howdy in `/lib/security` and to keep it read-only.
 
+Face models are biometric data, so the models directory (`/etc/howdy/models`) is root-only: the directory is mode 0700 and the model files are mode 0600. The PAM module reads them as root during authentication. A consequence of this is that a PAM stack running in an unprivileged user context cannot read the models and will skip Howdy; this is known to affect KDE's KScreenLocker, whose PAM conversation does not run as root. Screen unlock through such a stack falls back to password authentication.
+
 DO NOT USE HOWDY AS THE SOLE AUTHENTICATION METHOD FOR YOUR SYSTEM.
