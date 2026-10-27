@@ -245,8 +245,8 @@ encodings.append(insert_model)
 with open(enc_file, "w") as datafile:
 	json.dump(encodings, datafile)
 
-# Restrict permissions so only root can read the biometric model
-os.chmod(enc_file, 0o600)
+# Set the model file permissions from the models directory shape
+paths_factory.restrict_model_file(enc_file)
 
 # Give let the user know how it went
 print(_("""\nScan complete
