@@ -207,7 +207,17 @@ try:
 						color = (0, 230, 0)
 
 						# Print the name of the model next to the circle
-						circle_text = "{} (certainty: {})".format(models[match_index]["label"], round(match * 10, 3))
+						# The match index counts into the flat list of all encodings,
+						# walk the models to find which one owns the winning encoding
+						winning_model = 0
+						seen_encodings = 0
+						for i, model in enumerate(models):
+							seen_encodings += len(model["data"])
+							if match_index < seen_encodings:
+								winning_model = i
+								break
+
+						circle_text = "{} (certainty: {})".format(models[winning_model]["label"], round(match * 10, 3))
 						cv2.putText(overlay, circle_text, (int(x + r / 3), y - r), cv2.FONT_HERSHEY_SIMPLEX, .3, (0, 255, 0), 0, cv2.LINE_AA)
 					# If no approved matches, show red text
 					else:

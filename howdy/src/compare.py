@@ -369,7 +369,17 @@ while True:
 				print(_("Dark frames ignored: %d ") % (dark_tries, ))
 				print(_("Certainty of winning frame: %.3f") % (match * 10, ))
 
-				print(_("Winning model: %d (\"%s\")") % (match_index, models[match_index]["label"]))
+				# The match index counts into the flat list of all encodings,
+				# walk the models to find which one owns the winning encoding
+				winning_model = 0
+				seen_encodings = 0
+				for i, model in enumerate(models):
+					seen_encodings += len(model["data"])
+					if match_index < seen_encodings:
+						winning_model = i
+						break
+
+				print(_("Winning model: %d (\"%s\")") % (winning_model, models[winning_model]["label"]))
 
 			# Make snapshot if enabled
 			if save_successful:
