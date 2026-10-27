@@ -12,7 +12,8 @@ This fork of boltgolt/howdy carries changes that are not in upstream:
   indexes the winning encoding, and a lid-state glob error logged
   at every authentication on machines without a lid.
 
-Upstream is unmaintained (its last release is from 2020). The
-openSUSE package builds from the upstream sources and applies
-these changes as patches:
+Upstream's last release is from 2020; its master branch last
+changed in June 2025 with an unreleased 3.0.0 beta merge, which
+is the base this fork diverges from. The openSUSE package builds
+from the upstream sources and applies these changes as patches:
 https://build.opensuse.org/package/show/home:scarabeus_iv:howdy
