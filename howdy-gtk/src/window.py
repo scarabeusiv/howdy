@@ -77,7 +77,9 @@ class MainWindow(gtk.Window):
 		if self.active_user: user = self.active_user
 
 		# Execute the list command to get the models
-		status, output = subprocess.getstatusoutput(["howdy list --plain -U " + user])
+		proc = subprocess.run(["howdy", "list", "--plain", "-U", user], capture_output=True, text=True)
+		status = proc.returncode
+		output = proc.stdout + proc.stderr
 
 		# Create a datamodel
 		self.listmodel = gtk.ListStore(str, str, str)
@@ -102,7 +104,9 @@ class MainWindow(gtk.Window):
 		except Exception:
 			user = os.environ.get("SUDO_USER")
 
-		status, output = subprocess.getstatusoutput(["sudo -u " + user + " timeout 10 xdg-open " + uri])
+		proc = subprocess.run(["sudo", "-u", user, "timeout", "10", "xdg-open", uri], capture_output=True, text=True)
+		status = proc.returncode
+		output = proc.stdout + proc.stderr
 		return True
 
 	def exit(self, widget=None, context=None):

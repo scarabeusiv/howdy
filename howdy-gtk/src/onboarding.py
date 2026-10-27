@@ -81,7 +81,7 @@ class OnboardingWindow(gtk.Window):
 			self.enable_next()
 			return
 
-		self.proc = subprocess.Popen("./install.sh", stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, cwd=paths_factory.dlib_data_dir_path())
+		self.proc = subprocess.Popen(["./install.sh"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd=paths_factory.dlib_data_dir_path())
 
 		self.download_lines = []
 		self.read_download_line()
@@ -137,7 +137,7 @@ class OnboardingWindow(gtk.Window):
 			device_name = dev
 
 			# Get the udevadm details to try to get a better name
-			udevadm = subprocess.check_output(["udevadm info -r --query=all -n " + device_path], shell=True).decode("utf-8")
+			udevadm = subprocess.check_output(["udevadm", "info", "-r", "--query=all", "-n", device_path]).decode("utf-8")
 
 			# Loop though udevadm to search for a better name
 			for line in udevadm.split("\n"):
@@ -239,7 +239,7 @@ class OnboardingWindow(gtk.Window):
 			self.show_error(_("Error selecting camera"))
 
 		device_path = listmodel.get_value(listmodel.get_iter(rowlist[0]), 2)
-		self.proc = subprocess.Popen("howdy set device_path " + device_path, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
+		self.proc = subprocess.Popen(["howdy", "set", "device_path", device_path], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
 		self.window.set_focus(self.builder.get_object("scanbutton"))
 
@@ -258,7 +258,9 @@ class OnboardingWindow(gtk.Window):
 		gobject.timeout_add(600, self.run_add)
 
 	def run_add(self):
-		status, output = subprocess.getstatusoutput(["howdy add -y"])
+		proc = subprocess.run(["howdy", "add", "-y"], capture_output=True, text=True)
+		status = proc.returncode
+		output = proc.stdout + proc.stderr
 
 		print("howdy add output:")
 		print(output)
@@ -291,7 +293,7 @@ class OnboardingWindow(gtk.Window):
 		elif radio_selected == "radiosecure":
 			radio_certanty = 2.2
 
-		self.proc = subprocess.Popen("howdy set certainty " + str(radio_certanty), stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
+		self.proc = subprocess.Popen(["howdy", "set", "certainty", str(radio_certanty)], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
 		self.nextbutton.hide()
 		self.builder.get_object("cancelbutton").hide()
