@@ -1,6 +1,7 @@
 ![](https://boltgolt.nl/howdy/banner.png)
 
 > **Fork:** this repository carries security hardening and fixes ahead of upstream - see [FORK.md](FORK.md).
+> **openSUSE deployment:** how to deploy the packaged Howdy is in [DEPLOY.md](DEPLOY.md).
 
 <p align="center">
 	<a href="https://github.com/boltgolt/howdy/releases">
