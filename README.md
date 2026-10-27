@@ -1,5 +1,7 @@
 ![](https://boltgolt.nl/howdy/banner.png)
 
+> **Fork:** this repository carries security hardening and fixes ahead of upstream - see [FORK.md](FORK.md).
+
 <p align="center">
 	<a href="https://github.com/boltgolt/howdy/releases">
 		<img src="https://img.shields.io/github/release/boltgolt/howdy.svg?colorB=4c1">
