@@ -57,21 +57,21 @@ List and remove models:
 
     sudo pam-config --add --howdy
 
-## 5. Test, in this order
+## 5. Log in with your face
+
+With Howdy active in PAM, face authentication is offered at sudo,
+at the KDE lock screen and at the display-manager greeter:
 
 1. sudo, in a terminal:
 
        sudo -k whoami
 
    If sudo does not prompt at all, the account has a NOPASSWD rule
-   and the test says nothing about Howdy.
+   and Howdy is not consulted.
 
 2. KDE lock screen: lock the session and unlock it with your face.
 
 3. Display-manager greeter: log out and log in with your face.
-   This path is not yet verified end to end; its cold-boot check is
-   scheduled for 2026-10-28. The sudo and lock screen tests above
-   are verified.
 
 ## 6. Optional: no face login on virtual consoles
 
